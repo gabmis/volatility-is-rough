@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from math import e, pow
+from util import LinkedList
 
 mu_ = 0.1
 beta = 1.05
@@ -9,7 +10,7 @@ alpha = 1 + beta/gamma
 phi = []
 
 def init(m, T):
-    N, lambd, dN, mu, phi = np.zeros((2,1)), np.zeros((2,1)), np.zeros((2,1)), np.ones((2,1))*m, []
+    N, lambd, dN, mu, phi = np.zeros((2,1)), np.zeros((2,1)), LinkedList(np.zeros((2,1))), np.ones((2,1))*m, []
     for t in range (30):
         phi.append(PHI(t))
     return N, lambd, dN, mu, phi
@@ -25,14 +26,15 @@ def PHI(t):
 
 def integr(t, dN, phi):
     res = np.zeros((2,1))
+    dnlist = dN.getValues()
     if t<30:
         for s in range(t):
-            dn = np.reshape(dN[:,s],(2,1))
+            dn = np.reshape(dnlist[s],(2,1))
             #print (t-s)
             res += np.dot(phi[t-s],dn)
     else:
         for s in range(t-29, t):
-            dn = np.reshape(dN[:,s],(2,1))
+            dn = np.reshape(dnlist[s-t+29],(2,1))
             res += np.dot(phi[t-s],dn)
     return res
 
@@ -51,7 +53,7 @@ def simul(T,m):
     for t in range(T):
         lambd = mu + integr(t-1, dN, phi)
         dn =evolue(lambd)
-        dN = np.append(dN, dn, axis=1)
+        dN.addLast(dn)
         N += dn
         P.append(N[0,0] - N[1,0])
     #print (lambd)
@@ -60,7 +62,7 @@ def simul(T,m):
 def figure(T):
     t = np.arange(T+1)
     m =0
-    for i in range (1):
+    for i in range (15):
         P = simul(T,mu_)
         #m+= np.mean(P)
         plt.plot(t,P)
@@ -68,4 +70,4 @@ def figure(T):
     #print (m)
     plt.show()
 
-figure(1000)
+figure(100000)
