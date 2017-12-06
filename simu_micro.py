@@ -10,7 +10,7 @@ phi = []
 
 def init(m, T):
     N, lambd, dN, mu, phi = np.zeros((2,1)), np.zeros((2,1)), np.zeros((2,1)), np.ones((2,1))*m, []
-    for t in range (T):
+    for t in range (30):
         phi.append(PHI(t))
     return N, lambd, dN, mu, phi
 
@@ -25,12 +25,19 @@ def PHI(t):
 
 def integr(t, dN, phi):
     res = np.zeros((2,1))
-    for s in range(t):
-        dn = np.reshape(dN[:,s],(2,1))
-        res += np.dot(phi[t-s],dn)
+    if t<30:
+        for s in range(t):
+            dn = np.reshape(dN[:,s],(2,1))
+            #print (t-s)
+            res += np.dot(phi[t-s],dn)
+    else:
+        for s in range(t-29, t):
+            dn = np.reshape(dN[:,s],(2,1))
+            res += np.dot(phi[t-s],dn)
     return res
 
-def evolue(x, lambd):
+def evolue(lambd):
+    x = np.random.random(2)
     dn = np.zeros((2,1))
     if (x[0] <= lambd[0,0]):
         dn[0,0] = 1
@@ -43,8 +50,7 @@ def simul(T,m):
     P = [0]
     for t in range(T):
         lambd = mu + integr(t-1, dN, phi)
-        x = np.random.random(2)
-        dn =evolue(x, lambd)
+        dn =evolue(lambd)
         dN = np.append(dN, dn, axis=1)
         N += dn
         P.append(N[0,0] - N[1,0])
@@ -53,9 +59,13 @@ def simul(T,m):
 
 def figure(T):
     t = np.arange(T+1)
-    for i in range (15):
+    m =0
+    for i in range (1):
         P = simul(T,mu_)
+        #m+= np.mean(P)
         plt.plot(t,P)
+    m/=10
+    #print (m)
     plt.show()
 
-figure(10000)
+figure(1000)
