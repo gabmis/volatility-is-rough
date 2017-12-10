@@ -9,11 +9,11 @@ Lambd = 1
 K2 = 1
 K1 = 1 + beta/K2
 phi = []
-
+maxlen = 11
 def init(m, T):
     a_T = 1-Lambd/T
-    N, lambd, dN, mu, phi = np.array([[100.],[0.]]), np.zeros((2,1)), LinkedList(np.zeros((2,1))), np.ones((2,1))*m, []
-    for t in range (30):
+    N, lambd, dN, mu, phi = np.array([[100.],[0.]]), np.zeros((2,1)), LinkedList(np.zeros((2,1)),maxlen), np.ones((2,1))*m, []
+    for t in range (maxlen):
         phi.append(PHI(t))
     return N, lambd, dN, mu, phi
 
@@ -29,14 +29,14 @@ def PHI(t):
 def integr(t, dN, phi):
     res = np.zeros((2,1))
     dnlist = dN.getValues()
-    if t<30:
+    if t<maxlen:
         for s in range(t):
             dn = np.reshape(dnlist[s],(2,1))
             #print (t-s)
             res += np.dot(phi[t-s],dn)
     else:
-        for s in range(t-29, t):
-            dn = np.reshape(dnlist[s-t+29],(2,1))
+        for s in range(t-(maxlen-1), t):
+            dn = np.reshape(dnlist[s-t+(maxlen -1)],(2,1))
             res += np.dot(phi[t-s],dn)
     return res
 
@@ -75,3 +75,5 @@ def figure(T):
     plt.show()
 
 figure(1000)
+#for i in range (30):
+#    print (i, phi_1(i), phi_2(i))

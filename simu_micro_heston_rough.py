@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from math import pow
-from util import LinkedList2
+from util import LinkedList
 
 mu_ = 0.1
 beta = 1.1
@@ -10,12 +10,12 @@ alpha = 0.6
 K1 = 0.3
 K2 = (1/2.1253-K1)/beta
 phi = []
-
+maxlen = 150
 def init(m, T):
     a_T = 1-Lambd/pow(T,alpha)
     mu_T = m/pow(T, 1-alpha)
-    N, lambd, dN, mu, phi = np.array([[100.],[0.]]), np.zeros((2,1)), LinkedList2(np.zeros((2,1))), np.ones((2,1))*mu_T, []
-    for t in range (630):
+    N, lambd, dN, mu, phi = np.array([[100.],[0.]]), np.zeros((2,1)), LinkedList(np.zeros((2,1)), maxlen), np.ones((2,1))*mu_T, []
+    for t in range (maxlen):
         phi.append(a_T*PHI(t))
     return N, lambd, dN, mu, phi
 
@@ -31,14 +31,14 @@ def PHI(t):
 def integr(t, dN, phi):
     res = np.zeros((2,1))
     dnlist = dN.getValues()
-    if t<630:
+    if t<maxlen:
         for s in range(t):
             dn = np.reshape(dnlist[s],(2,1))
             #print (t-s)
             res += np.dot(phi[t-s],dn)
     else:
-        for s in range(t-629, t):
-            dn = np.reshape(dnlist[s-t+629],(2,1))
+        for s in range(t-(maxlen-1), t):
+            dn = np.reshape(dnlist[s-t+(maxlen-1)],(2,1))
             res += np.dot(phi[t-s],dn)
     return res
 
