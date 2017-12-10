@@ -14,7 +14,7 @@ phi = []
 def init(m, T):
     a_T = 1-Lambd/pow(T,alpha)
     mu_T = m/pow(T, 1-alpha)
-    N, lambd, dN, mu, phi = np.zeros((2,1)), np.zeros((2,1)), LinkedList2(np.zeros((2,1))), np.ones((2,1))*mu_T, []
+    N, lambd, dN, mu, phi = np.array([[100.],[0.]]), np.zeros((2,1)), LinkedList2(np.zeros((2,1))), np.ones((2,1))*mu_T, []
     for t in range (630):
         phi.append(a_T*PHI(t))
     return N, lambd, dN, mu, phi
@@ -53,7 +53,7 @@ def evolue(lambd):
 
 def simul(T,m):
     N, lambd, dN, mu, phi= init(m, T)
-    P = [0]
+    P = [100]
     for t in range(T):
         lambd = mu + integr(t-1, dN, phi)
         dn =evolue(lambd)
@@ -73,6 +73,7 @@ def figure(T):
         plt.plot(t,P)
     m/=10
     #print (m)
+    plt.title("Heston Rough, h = %d, mu = %f, beta = %s, Lambda = %s, alpha = %s, K1 = %s, K2 = %f" %(T, mu_/pow(T,1-alpha),beta, Lambd, alpha, K1, K2))
     plt.show()
 
 figure(1000)

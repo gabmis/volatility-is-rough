@@ -5,21 +5,23 @@ from util import LinkedList
 
 mu_ = 0.1
 beta = 1.1
-gamma = 1
-alpha = 1 + beta/gamma
+Lambd = 1
+K2 = 1
+K1 = 1 + beta/K2
 phi = []
 
 def init(m, T):
-    N, lambd, dN, mu, phi = np.zeros((2,1)), np.zeros((2,1)), LinkedList(np.zeros((2,1))), np.ones((2,1))*m, []
+    a_T = 1-Lambd/T
+    N, lambd, dN, mu, phi = np.array([[100.],[0.]]), np.zeros((2,1)), LinkedList(np.zeros((2,1))), np.ones((2,1))*m, []
     for t in range (30):
         phi.append(PHI(t))
     return N, lambd, dN, mu, phi
 
 def phi_1(t):
-    return pow(e,-alpha*t)
+    return pow(e,-K1*t)
 
 def phi_2(t):
-    return pow(e, -gamma*t)
+    return pow(e, -K2*t)
 
 def PHI(t):
     return np.array([[phi_1(t), beta*phi_2(t)],[phi_2(t), phi_1(t) + (beta-1)*phi_2(t)]])
@@ -49,7 +51,7 @@ def evolue(lambd):
 
 def simul(T,m):
     N, lambd, dN, mu, phi= init(m, T)
-    P = [0]
+    P = [100]
     for t in range(T):
         lambd = mu + integr(t-1, dN, phi)
         dn =evolue(lambd)
@@ -62,13 +64,14 @@ def simul(T,m):
 def figure(T):
     t = np.arange(T)
     m =0
-    for i in range (1):
+    for i in range (5):
         p = simul(T**2,mu_)
         P = [1/T*p[t*T] for t in range(T)]
         #m+= np.mean(P)
         plt.plot(t,P)
     m/=10
     #print (m)
+    plt.title("Heston, h = %d, mu = %s, beta = %s, Lambda = %s, K1 = %s, K2 = %s, a_T = %s" %(T, mu_, beta, Lambd, K1, K2, 1-Lambd/T))
     plt.show()
 
-figure(10000)
+figure(1000)
