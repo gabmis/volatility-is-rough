@@ -64,14 +64,15 @@ def simul(T,m):
     return P
 
 def figure(T):
-    t = np.arange(T+1)
+    t = np.arange(T)
     m =0
-    for i in range (1):
-        P = simul(T,mu_)
+    for i in range (5):
+        p = simul(T**2,mu_)
+        P = [1/T*p[t*T] for t in range(T)]
         #m+= np.mean(P)
         plt.plot(t,P)
     m/=10
     #print (m)
     plt.show()
 
-figure(100000)
+figure(1000)
