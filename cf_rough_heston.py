@@ -21,8 +21,9 @@ def h_pre_estim(a, k, delta, alpha, lambd, rho, nu, memory, memory_pre):
         return 0
     if k in memory_pre.keys():
         return memory_pre[k]
-    j = np.array(k)
+    j = np.arange(k)
     b = np.vectorize(lambda t: b_(t, k, alpha, delta))(j)
+    #b = [b_(t, k, alpha, delta) for t in j]
     #b = (delta ** (alpha + 1) / gamma(alpha + 1)) * ((k - j) ** alpha - (k - 1 - j) ** alpha)
     h_estim = np.vectorize(lambda t: h_numerical(a, t, delta, alpha, lambd, rho, nu, memory, memory_pre))(j)
     hk_pre = np.sum(b * F(a, h_estim, lambd, rho, nu))
@@ -57,18 +58,18 @@ def Lp(theta, v0, a, t, delta, alpha, lambd, rho, nu):
     memory = {}
     memory_pre = {}
     n = int (t/delta)
-    k = np.arange(1, n + 1)
+    k = np.arange(1, n)
     hk = np.vectorize(lambda i: h_numerical(a, i, delta, alpha, lambd, rho, nu, memory, memory_pre))(k)
     tk = k*delta
     I1 = I(1, hk, tk, t, delta)
     I2 = I(1-alpha, hk, tk, t, delta)
-    return pow(e, theta*lambd*I1 - v0*I2)
+    return e**(theta*lambd*I1 - v0*I2)
 
 theta = 0.04
 nu = 0.05
 v0 = 0.4
 rho = -0.5
 lambd = 2
-alpha = 1
+alpha = 0.9
 delta = 0.01
-print (Lp(theta, v0, 1, 2, delta, alpha, lambd, rho, nu))
+print (Lp(theta, v0, 0.9, 2, delta, alpha, lambd, rho, nu))
