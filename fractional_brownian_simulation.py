@@ -76,4 +76,3 @@ def fbm(h, n, t):
     res = (t / n) ** h * fgn.cumsum()
     return res
 
-# testing the smoothness estimation
