@@ -68,7 +68,7 @@ def Lp(theta, v0, a, t, delta, alpha, lambd, rho, nu):
     return e**(theta*lambd*I1 - v0*I2)
 
 S = 1
-K = 0.5
+K = 1
 theta = 0.04
 v0 = 0.4
 delta = 0.01
@@ -77,7 +77,7 @@ lambd = 2
 rho = -0.5
 nu = 0.05
 q =0
-r =0.01
+r =0.05
 a = 10
 
 #print (Lp(theta, v0, a-1j/2, 1, delta, alpha, lambd, rho, nu))
@@ -92,13 +92,34 @@ def payoff(S, K, T, theta, v0, delta, alpha, lambd, rho, nu, q, r):
     integrande = integrande.real
     return t1-t2*D*np.sum(integrande)
 
-def plot_payoff(S, K, theta, v0, delta, alpha, lambd, rho, nu, q, r):
-    t = np.linspace(0.01, 2, 20)
-    pay = np.vectorize(lambda s: payoff(S, K, s, theta, v0, delta, alpha, lambd, rho, nu, q, r))(t)
-    plt.plot(t, pay)
+def plot_payoff(S, K, T, theta, v0, delta, alpha, lambd, rho, nu, q, r):
+    k = np.linspace(0.01, 2, 20)
+    pay = np.vectorize(lambda s: payoff(S, s, T, theta, v0, delta, alpha, lambd, rho, nu, q, r))(k)
+    plt.plot(k, pay)
     plt.xlabel('maturité')
     plt.ylabel('payoff')
     plt.show()
 
-plot_payoff(S, K, theta, v0, delta, alpha, lambd, rho, nu, q, r)
+#plot_payoff(S, K, 2, theta, v0, delta, alpha, lambd, rho, nu, q, r)
 #print(payoff(S, K, 1, theta, v0, delta, alpha, lambd, rho, nu, q, r))
+
+from vol import f
+
+def sigma(S, K, T, theta, v0, delta, alpha, lambd, rho, nu, q, r):
+    #C0 = payoff(S, K, T, theta, v0, delta, alpha, lambd, rho, nu, q, r)
+    C0 = 1.1
+    i = 0.01
+    print(f(C0, S, K, r, T, i))
+    if (f(C0, S, K, r, T, i)>0):
+        t = np.linspace(0.0001, i, 100)
+    else :
+        while (f(C0, S, K, r, T, i)<0):
+            i+=1
+        print (i)
+        t = np.linspace(i-1, i, 100)
+    j=0
+    while (f(C0, S, K, r, T, t[j])<0):
+        j+=1
+    return (t[j-1]+t[j])/2
+
+print (sigma(S, K, 2, theta, v0, delta, alpha, lambd, rho, nu, q, r))
