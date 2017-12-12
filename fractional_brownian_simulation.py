@@ -3,9 +3,8 @@ import numpy.random as rd
 import scipy.linalg as lalg
 from scipy.fftpack import fft, ifft
 
+
 # our covariance function
-
-
 def cov(h, n):
     if n >= 1:
         return 0.5 * ((n + 1) ** (2 * h) + (n - 1) ** (2 * h)
@@ -19,32 +18,27 @@ vec_cov = np.vectorize(cov)
 
 
 # circulant coefficients function:
-
-
 def circ_coefs(h, n):
     m = 2 * (n - 1)
     index = np.arange(1, m)
     coefs = np.zeros(m)
-    coefs[0] = 0
-    coefs[1:n + 1] = vec_cov(h, index[:n])
-    coefs[n + 1:] = vec_cov(h, m - index[n:])
+    coefs[0] = 1
+    coefs[1:n] = vec_cov(h, index[:n - 1])
+    coefs[n:] = vec_cov(h, m - index[n - 1:])
     return coefs
 
+
 # circulant matrix
-
-
 def mat_circ(h, n):
     coefs = circ_coefs(h, n)
     return lalg.circulant(coefs)
 
+
 # fft matrix and diagonal matrix with sqrt of eigenvalues
-# (COULD BE DONE USING FFT LIBRARY FROM NUMPY ---> FASTER?)
-
-
 def eigen_values(h, n):
     m = 2 * (n - 1)
-    j = np.zeros((m, m))
-    j[1:, :] = np.ones((m - 1, m))
+    j = np.ones((m, m))
+    j[0, :] = np.zeros(m)
     j = np.cumsum(j, axis=0)
     k = np.zeros((m, m))
     k[:, 1:] = np.ones((m, m - 1))
@@ -54,23 +48,20 @@ def eigen_values(h, n):
     q_t = np.transpose(q)
     eigen_complex = np.sqrt(m) * np.dot(q_t, coefs)
     eigen_sqrt = np.sqrt(eigen_complex)
-    eigen_sqrt_real = np.real(eigen_sqrt)
-    return eigen_sqrt_real
+    return eigen_sqrt
 
 
 def fbm(h, n, t):
     m = 2 * (n - 1)
     # random gaussian
-    seed = 0
+    seed = 10^2
     rd.seed(seed)
     xsi = rd.normal(size=m)
-    # circulant coefs
-    eigen = eigen_values(h, n)
     # computing fbm
     # multiply by 1/sqrt(m)Q* by taking inverse dft
     step1 = ifft(xsi)
     # multiply by vector of eigenvalues
-    step2 = np.multiply(step1, eigen)
+    step2 = np.multiply(step1, eigen_values(h, n))
     # multiply by sqrt(m)Q by taking dft
     fgn = np.real(fft(step2))[:n]
     res = (t / n) ** h * fgn.cumsum()
