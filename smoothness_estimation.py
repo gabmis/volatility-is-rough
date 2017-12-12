@@ -30,8 +30,10 @@ def plotVar(motion, t):
         for j in range(arr_delta.size):
             logM = np.log(m(motion, t, arr_q[i], arr_delta[j]))
             arr_res.append(logM)
+        arr_res = [arr_res[t]-0.7*arr_q[i] for t in range(len(arr_res))]
+        fit = np.polyfit(logDelta, arr_res, deg=1)
         # plot the results
-        plt.scatter(logDelta, arr_res, s=0.5, color=colors[i], label=" q = {} ".format(arr_q[i]))
+        plt.scatter(logDelta,arr_res ,s=3,marker="*", color=colors[i], label=" q = {} ".format(arr_q[i]))
+        plt.plot(logDelta, fit[0]*logDelta+fit[1], color=colors[i])
     plt.legend(loc="best")
     plt.show()
-
