@@ -115,7 +115,6 @@ def sigma(S, K, T, theta, v0, delta, alpha, lambd, rho, nu, q, r):
     else :
         while (f(C0, S, K, r, T, i)<0):
             i+=1
-        print (i)
         t = np.linspace(i-1, i, 100)
     j=0
     while (f(C0, S, K, r, T, t[j])<0):

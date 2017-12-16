@@ -19,11 +19,13 @@ def m(motion, t, q, delta):
 # we plot the the values of log(m(q, delta)) against log(delta)
 def plotVar(motion, t):
     plt.figure()
-    plt.title("Plot of log(m(q, delta)) against log(delta) \n for different values of q")
+    #plt.title("Plot of log(m(q, delta)) against log(delta) \n for different values of q")
+    plt.title("Plot of dzeta_q against q for S&P 500")
     arr_delta = np.arange(1, 50)
     logDelta = np.log(arr_delta)
-    arr_q = [0.5, 1, 1.5, 2, 3]
+    arr_q = [0.01, 0.5, 1, 1.5, 2, 2.5, 3]
     colors = ["r", "g", "b", "y", "k"]
+    pente = []
     # compute for each value of q/delta
     for i in range(len(arr_q)):
         arr_res = []
@@ -32,8 +34,12 @@ def plotVar(motion, t):
             arr_res.append(logM)
         arr_res = [arr_res[t]-0.7*arr_q[i] for t in range(len(arr_res))]
         fit = np.polyfit(logDelta, arr_res, deg=1)
+        pente.append(fit[0])
         # plot the results
-        plt.scatter(logDelta,arr_res ,s=3,marker="*", color=colors[i], label=" q = {} ".format(arr_q[i]))
-        plt.plot(logDelta, fit[0]*logDelta+fit[1], color=colors[i])
-    plt.legend(loc="best")
+        #plt.scatter(logDelta,arr_res ,s=3,marker="*", color=colors[i], label=" q = {} ".format(arr_q[i]))
+        #plt.plot(logDelta, fit[0]*logDelta+fit[1], color=colors[i])
+    plt.plot(arr_q, pente)
+    plt.xlabel("q")
+    plt.ylabel('s')
+    #plt.legend(loc="best")
     plt.show()
